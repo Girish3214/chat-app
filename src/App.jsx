@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <NavBar />
-      <Container maxWidth="lg">
+      <Container component={"main"} maxWidth="lg" sx={{ height: "85%" }}>
         <RouterComponent />
       </Container>
     </>
