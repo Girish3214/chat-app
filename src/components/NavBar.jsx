@@ -1,43 +1,67 @@
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  CssBaseline,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, Container, Typography } from "@mui/material";
 import React from "react";
 import headerStyles from "../assets/headerStyles";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useGlobalContext } from "../store/context";
+import Hidden from "@mui/material/Hidden";
 
-const drawerWidth = 240;
-const navItems = ["Home", "About", "Contact"];
-
-const NavBar = (props) => {
-  const { window } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
-  };
-
+const NavBar = () => {
+  const { user, logoutUser } = useGlobalContext();
+  const { pathname } = useLocation();
   return (
     <>
       <Box sx={headerStyles.box}>
         <Container maxWidth="auto" sx={headerStyles.container}>
           <Container maxWidth="lg" sx={headerStyles.centerContainer}>
-            <Typography variant="h4" sx={headerStyles.titleName}>
+            <Typography
+              variant="h4"
+              sx={(theme) => ({
+                "& > a": {
+                  textDecoration: "none",
+                  color: "inherit",
+                },
+                [theme.breakpoints.down("md")]: {
+                  fontSize: "2rem",
+                },
+              })}
+            >
               <Link to={"/"}>ChatApp</Link>
             </Typography>
+            {user && (
+              <Box sx={headerStyles.menuContainer}>
+                <Avatar sx={headerStyles.avatar}>
+                  <img src={user?.avatar} alt="profile" />
+                </Avatar>
+                <Hidden mdDown>
+                  <Typography variant="h6" sx={headerStyles.menuTitles}>
+                    {user?.name}
+                  </Typography>
+                </Hidden>
+              </Box>
+            )}
             <Box sx={headerStyles.menuContainer}>
-              <Typography variant="h6" sx={headerStyles.menuTitles}>
-                <Link to={"/login"}>Login</Link>
-              </Typography>
-              <Typography variant="h6" sx={headerStyles.menuTitles}>
-                <Link to={"/register"}>Register</Link>
-              </Typography>
+              {user ? (
+                <>
+                  <Typography variant="h6" sx={headerStyles.menuTitles}>
+                    <Link to={"/login"} onClick={() => logoutUser()}>
+                      Logout
+                    </Link>
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  {pathname === "/register" && (
+                    <Typography variant="h6" sx={headerStyles.menuTitles}>
+                      <Link to={"/login"}>Login</Link>
+                    </Typography>
+                  )}
+                  {pathname === "/login" && (
+                    <Typography variant="h6" sx={headerStyles.menuTitles}>
+                      <Link to={"/register"}>Register</Link>
+                    </Typography>
+                  )}
+                </>
+              )}
             </Box>
           </Container>
         </Container>

@@ -5,15 +5,24 @@ import ErrorPage from "../pages/error/ErrorPage";
 import LoginPage from "../pages/login/LoginPage";
 import RegisterPage from "../pages/register/RegisterPage";
 import SetAvatar from "../pages/avatar/SetAvatar";
+import { useGlobalContext } from "../store/context";
 
 const RouterComponent = () => {
+  const { user } = useGlobalContext();
+
   return (
     <>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/setAvatar" element={<SetAvatar />} />
+        <Route path="/" element={user ? <HomePage /> : <LoginPage />} />
+        <Route path="/login" element={user ? <HomePage /> : <LoginPage />} />
+        <Route
+          path="/register"
+          element={user ? <HomePage /> : <RegisterPage />}
+        />
+        <Route
+          path="/setAvatar"
+          element={user ? <HomePage /> : <SetAvatar />}
+        />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     </>

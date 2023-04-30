@@ -25,10 +25,6 @@ const LoginPage = () => {
   const { loginUser, loginError, setLoginError } = useGlobalContext();
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState(initialErrorData);
-  const [alert, setAlert] = useState({
-    open: false,
-    msg: "",
-  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -49,9 +45,10 @@ const LoginPage = () => {
       return;
     }
     const res = await loginUser(formData);
-    console.log("res", res);
-    setErrors(initialErrorData);
-    setFormData(initialData);
+    if (res) {
+      setErrors(initialErrorData);
+      setFormData(initialData);
+    }
   };
   return (
     <>

@@ -45,7 +45,6 @@ function RegisterPage() {
       });
       return;
     }
-    console.log(registerInfo);
     registerUser(registerInfo);
     setErrors(initialErrorData);
   };

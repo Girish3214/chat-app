@@ -37,6 +37,9 @@ const headerStyles = {
       marginRight: 2,
     },
   },
+  avatar: {
+    marginRight: 2,
+  },
 };
 
 export default headerStyles;
