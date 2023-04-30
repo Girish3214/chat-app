@@ -1,51 +1,74 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Box, Container, Paper, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  Typography,
+} from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../uitils/baseAxios";
 import { Buffer } from "buffer";
+import { avatarSeeds, bgColors, sprites } from "../../uitils/avatarName";
+import { setAvatarApi } from "../../uitils/apiUrls";
 
-const sprites = [
-  "male",
-  "female",
-  "human",
-  "bottts",
-  "avataaars",
-  "gridy",
-  "micah",
-  "adventurer",
-  "adventurer-neutral",
-  "avataaars-neutral",
-];
 const SetAvatar = () => {
   //   const avatarApi = "https://api.multiavatar.com/45678945";
   const avatarApi = "https://avatars.dicebear.com/api";
   const navigate = useNavigate();
 
   const [avatars, setAvatars] = useState([]);
-  const [selectAvatars, setSelectedAvatars] = useState([]);
+  const [selectedAvatar, setSelectedAvatar] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  const [refresh, setRefresh] = useState(0);
 
   const getAvatars = async () => {
     let data = [];
+    setIsLoading(true);
     for (let i = 0; i < 4; i++) {
       const image = await axios.get(
-        `${avatarApi}/${sprites[Math.floor(Math.random() * 9) + 1]}/girish.svg`
+        `${avatarApi}/${sprites[Math.floor(Math.random() * 8) + 1]}/${
+          avatarSeeds[Math.floor(Math.random() * 19) + 1]
+        }.svg`
       );
       const buffer = new Buffer(image.data);
       data.push(buffer.toString("base64"));
-      console.log(data);
     }
     setAvatars(data);
     setIsLoading(false);
   };
-  const setProfile = async () => {};
+
+  const getInitialAvatar = async () => {
+    const image = await axios.get(
+      `https://api.dicebear.com/6.x/initials/svg?seed=${"Girish"}&backgroundColor=${
+        bgColors[Math.floor(Math.random() * 14) + 1]
+      }`
+    );
+    const buffer = new Buffer(image.data);
+    setSelectedAvatar(buffer.toString("base64"));
+  };
+  const setProfile = async () => {
+    const avatar = await axios.post(
+      `${setAvatarApi}/644e1032c70e5035709d5608`,
+      {
+        avatar: `data:image/svg+xml;base64,${selectedAvatar}`,
+      }
+    );
+    console.log(avatar);
+  };
 
   useEffect(() => {
     getAvatars();
     return () => {};
-  }, []);
+  }, [refresh]);
 
+  useEffect(() => {
+    getInitialAvatar();
+    return () => {};
+  }, []);
   return (
     <Container component="main" maxWidth="sm" sx={{ paddingTop: "4rem" }}>
       <Paper
@@ -67,26 +90,45 @@ const SetAvatar = () => {
             margin: 1,
           }}
         >
-          <AccountCircleIcon sx={{ width: 56, height: 56 }} />
+          <img
+            src={`data:image/svg+xml;base64,${selectedAvatar}`}
+            alt="avatar"
+            sx={{ width: 56, height: 56 }}
+          />
         </Avatar>
         <Typography component="h1" variant="h5">
           Select Avatar
         </Typography>
 
         <Box component="main" noValidate sx={{ mt: 1 }} className="avatars">
-          {avatars.map((avatar, index) => (
-            <div
-              key={avatar + index}
-              className={`avatar ${selectAvatars === index ? "selected" : ""}`}
-            >
-              <img
-                src={`data:image/svg+xml;base64,${avatar}`}
-                alt="avatar"
-                onClick={() => setSelectedAvatars(index)}
-              />
-            </div>
-          ))}
+          {isLoading ? (
+            <CircularProgress color="inherit" sx={{ height: "5rem" }} />
+          ) : (
+            avatars.map((avatar, index) => (
+              <div
+                key={avatar + index}
+                className={`avatar ${
+                  selectedAvatar === index ? "selected" : ""
+                }`}
+              >
+                <img
+                  src={`data:image/svg+xml;base64,${avatar}`}
+                  alt="avatar"
+                  onClick={() => setSelectedAvatar(avatar)}
+                />
+              </div>
+            ))
+          )}
         </Box>
+        <Button onClick={() => setRefresh(refresh + 1)}>refresh avatars</Button>
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+          onClick={() => setProfile()}
+        >
+          set avatar
+        </Button>
       </Paper>
     </Container>
   );
