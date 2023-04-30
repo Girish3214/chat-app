@@ -7,6 +7,10 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { Paper } from "@mui/material";
+import axios from "../../uitils/baseAxios";
+import { loginApi } from "../../uitils/apiUrls";
+import AlertMsg from "../../components/AlertMsg";
+import { useGlobalContext } from "../../store/context";
 
 const initialData = {
   email: "",
@@ -18,8 +22,14 @@ const initialErrorData = {
 };
 
 const LoginPage = () => {
+  const { loginUser, loginError, setLoginError } = useGlobalContext();
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState(initialErrorData);
+  const [alert, setAlert] = useState({
+    open: false,
+    msg: "",
+  });
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -28,7 +38,7 @@ const LoginPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     const { email, password } = formData;
     e.preventDefault();
     if (!email || !password) {
@@ -38,12 +48,21 @@ const LoginPage = () => {
       });
       return;
     }
-    console.log(formData);
+    const res = await loginUser(formData);
+    console.log("res", res);
     setErrors(initialErrorData);
     setFormData(initialData);
   };
   return (
     <>
+      {loginError && (
+        <AlertMsg
+          open={loginError.error}
+          message={loginError.msg}
+          handleClose={() => setLoginError(null)}
+        />
+      )}
+
       <Container component="main" maxWidth="xs" sx={{ paddingTop: "4rem" }}>
         <Paper
           sx={{

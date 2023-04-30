@@ -7,12 +7,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { Paper } from "@mui/material";
+import { useGlobalContext } from "../../store/context";
+import AlertMsg from "../../components/AlertMsg";
 
-const initialData = {
-  name: "",
-  email: "",
-  password: "",
-};
 const initialErrorData = {
   name: false,
   email: false,
@@ -20,18 +17,25 @@ const initialErrorData = {
 };
 
 function RegisterPage() {
-  const [formData, setFormData] = useState(initialData);
+  const {
+    registerInfo,
+    registerError,
+    updateRegisterInfo,
+    registerUser,
+    setRegisterError,
+  } = useGlobalContext();
   const [errors, setErrors] = useState(initialErrorData);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    updateRegisterInfo({
+      ...registerInfo,
       [name]: value,
     });
   };
 
   const handleSubmit = (e) => {
-    const { name, email, password } = formData;
+    const { name, email, password } = registerInfo;
     e.preventDefault();
     if (!name || !email || !password) {
       setErrors({
@@ -41,12 +45,19 @@ function RegisterPage() {
       });
       return;
     }
-    console.log(formData);
+    console.log(registerInfo);
+    registerUser(registerInfo);
     setErrors(initialErrorData);
-    setFormData(initialData);
   };
   return (
     <>
+      {registerError && (
+        <AlertMsg
+          open={registerError.error}
+          message={registerError.msg}
+          handleClose={() => setRegisterError(null)}
+        />
+      )}
       <Container component="main" maxWidth="xs" sx={{ paddingTop: "4rem" }}>
         <Paper
           sx={{
@@ -79,7 +90,7 @@ function RegisterPage() {
               name="name"
               error={errors.name}
               helperText={errors.name && "Name is required"}
-              value={formData.name}
+              value={registerInfo.name}
               onChange={(e) => handleInputChange(e)}
             />
             <TextField
@@ -90,7 +101,7 @@ function RegisterPage() {
               label="Email Address"
               name="email"
               autoComplete="email"
-              value={formData.email}
+              value={registerInfo.email}
               onChange={(e) => handleInputChange(e)}
               error={errors.email}
               helperText={errors.email && "Email is required"}
@@ -105,7 +116,7 @@ function RegisterPage() {
               type="password"
               id="password"
               autoComplete="current-password"
-              value={formData.password}
+              value={registerInfo.password}
               onChange={(e) => handleInputChange(e)}
               error={errors.password}
               helperText={errors.password && "Password is required"}
