@@ -8,8 +8,9 @@ const AlertMsg = ({ message, open, handleClose }) => {
         open={open}
         autoHideDuration={6000}
         onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         message={message}
+        sx={{ top: "100px !important" }}
       >
         <Alert
           open={open}
