@@ -3,25 +3,25 @@ import { getRequest } from "../uitils/serviceCalls";
 import { getUserApi } from "../uitils/apiUrls";
 
 function useFetchReceiverUser(chat, user) {
-  const [receivedUser, setReceiveeUser] = useState(null);
+  const [receivedUser, setReceivedUser] = useState(null);
   const [error, setError] = useState(null);
-  const receiverId = chat.members?.find((id) => id !== user?._id);
 
+  const receiverId = chat?.members?.find((id) => id !== user?._id);
   const getUser = async () => {
-    if (!receiverId) return;
+    if (!receiverId) return null;
 
     const response = await getRequest(`${getUserApi}/${receiverId}`);
 
     if (response.error) {
       return setError(response);
     }
-    setReceiveeUser(response);
+    setReceivedUser(response);
   };
   useEffect(() => {
     getUser();
 
     return () => {};
-  }, []);
+  }, [receiverId]);
 
   return { receivedUser, error };
 }

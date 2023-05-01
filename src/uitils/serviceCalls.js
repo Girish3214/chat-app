@@ -14,7 +14,6 @@ const postRequest = async (api, body) => {
 const getRequest = async (api, body) => {
   try {
     const response = await axios.get(api);
-    console.log(response);
     return response.data;
   } catch (error) {
     console.log(error);
