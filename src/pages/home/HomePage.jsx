@@ -4,9 +4,12 @@ import { Container, Hidden, Stack } from "@mui/material";
 import UserChat from "../../components/chats/UserChat";
 import { useGlobalContext } from "../../store/authContext";
 import homeStyles from "../../assets/homeStyles";
+import PotentialChats from "../../components/chats/PotentialChats";
+import ChatBox from "../../components/chats/ChatBox";
 
 const HomePage = () => {
-  const { userChats, isChatLoading, userChatsError } = useGlobalChatContext();
+  const { userChats, isChatLoading, updateCurrentChat } =
+    useGlobalChatContext();
   const { user } = useGlobalContext();
 
   if (userChats?.length < 1) {
@@ -14,17 +17,18 @@ const HomePage = () => {
   }
   return (
     <Container>
+      <PotentialChats />
       <Stack direction={"row"} spacing={4} sx={homeStyles.containerHeight}>
         <Stack spacing={3}>
           {isChatLoading && <p>Loading...</p>}
           {userChats?.map((chat, index) => (
-            <div key={chat._id + index}>
+            <div key={chat._id + index} onClick={() => updateCurrentChat(chat)}>
               <UserChat chat={chat} user={user} />
             </div>
           ))}
         </Stack>
         <Hidden smDown>
-          <h1>chat</h1>
+          <ChatBox />
         </Hidden>
       </Stack>
     </Container>

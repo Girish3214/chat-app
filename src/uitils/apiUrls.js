@@ -5,3 +5,5 @@ export const getAllUsersApi = "/users/all";
 export const setAvatarApi = "/users/setAvatar";
 
 export const getChatsApi = "/chats";
+
+export const messagesApi = "/messages";
