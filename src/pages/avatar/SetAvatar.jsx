@@ -16,9 +16,10 @@ import { Buffer } from "buffer";
 import { avatarSeeds, bgColors, sprites } from "../../uitils/avatarName";
 import { setAvatarApi } from "../../uitils/apiUrls";
 import AlertMsg from "../../components/AlertMsg";
+import { useGlobalContext } from "../../store/authContext";
 
 const SetAvatar = () => {
-  //   const avatarApi = "https://api.multiavatar.com/45678945";
+  const { setAvatarUser } = useGlobalContext();
   const avatarApi = "https://avatars.dicebear.com/api";
   const navigate = useNavigate();
 
@@ -69,6 +70,7 @@ const SetAvatar = () => {
           "user",
           JSON.stringify({ ...user, avatar: avatar.data.avatar })
         );
+        setAvatarUser({ ...user, avatar: avatar.data.avatar });
         navigate("/");
       } else {
         setAvatarError(true);
