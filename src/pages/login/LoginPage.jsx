@@ -10,7 +10,7 @@ import { Paper } from "@mui/material";
 import axios from "../../uitils/baseAxios";
 import { loginApi } from "../../uitils/apiUrls";
 import AlertMsg from "../../components/AlertMsg";
-import { useGlobalContext } from "../../store/context";
+import { useGlobalContext } from "../../store/authContext";
 
 const initialData = {
   email: "",

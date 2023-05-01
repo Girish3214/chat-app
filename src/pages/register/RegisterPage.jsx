@@ -7,7 +7,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { Paper } from "@mui/material";
-import { useGlobalContext } from "../../store/context";
+import { useGlobalContext } from "../../store/authContext";
 import AlertMsg from "../../components/AlertMsg";
 
 const initialErrorData = {
