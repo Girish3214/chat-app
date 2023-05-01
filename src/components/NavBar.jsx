@@ -8,7 +8,6 @@ import Hidden from "@mui/material/Hidden";
 const NavBar = () => {
   const { user, logoutUser } = useGlobalContext();
   const { pathname } = useLocation();
-  console.log(user);
   return (
     <>
       <Box sx={headerStyles.box}>

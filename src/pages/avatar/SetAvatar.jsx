@@ -56,7 +56,6 @@ const SetAvatar = () => {
   };
   const setProfile = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
-    console.log(user);
     setIsLoading(true);
     if (user?._id) {
       const avatar = await axios.post(`${setAvatarApi}/${user._id}`, {
