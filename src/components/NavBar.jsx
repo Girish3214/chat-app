@@ -2,12 +2,13 @@ import { Avatar, Box, Container, Typography } from "@mui/material";
 import React from "react";
 import headerStyles from "../assets/headerStyles";
 import { Link, useLocation } from "react-router-dom";
-import { useGlobalContext } from "../store/context";
+import { useGlobalContext } from "../store/authContext";
 import Hidden from "@mui/material/Hidden";
 
 const NavBar = () => {
   const { user, logoutUser } = useGlobalContext();
   const { pathname } = useLocation();
+  console.log(user);
   return (
     <>
       <Box sx={headerStyles.box}>
@@ -29,9 +30,11 @@ const NavBar = () => {
             </Typography>
             {user && (
               <Box sx={headerStyles.menuContainer}>
-                <Avatar sx={headerStyles.avatar}>
-                  <img src={user?.avatar} alt="profile" />
-                </Avatar>
+                {user?.avatar && (
+                  <Avatar sx={headerStyles.avatar}>
+                    <img src={user?.avatar} alt="profile" />
+                  </Avatar>
+                )}
                 <Hidden mdDown>
                   <Typography variant="h6" sx={headerStyles.menuTitles}>
                     {user?.name}
