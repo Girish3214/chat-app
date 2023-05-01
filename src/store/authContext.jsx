@@ -9,7 +9,7 @@ import { postRequest } from "../uitils/serviceCalls";
 import { loginApi, registerApi } from "../uitils/apiUrls";
 import { useNavigate } from "react-router-dom";
 
-const AppContext = createContext();
+const AppAuthContext = createContext();
 
 const initialData = {
   name: "",
@@ -17,7 +17,7 @@ const initialData = {
   password: "",
 };
 
-const AppProvider = ({ children }) => {
+const AppAuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [registerInfo, setRegisterInfo] = useState(initialData);
   const [registerError, setRegisterError] = useState(null);
@@ -63,6 +63,12 @@ const AppProvider = ({ children }) => {
     setUser(null);
   }, []);
 
+  const setAvatarUser = useCallback((data) => {
+    localStorage.removeItem("user");
+    localStorage.setItem("user", data);
+    setUser(data);
+  }, []);
+
   useEffect(() => {
     const localUser = localStorage.getItem("user");
     if (localUser) {
@@ -74,7 +80,7 @@ const AppProvider = ({ children }) => {
   }, []);
 
   return (
-    <AppContext.Provider
+    <AppAuthContext.Provider
       value={{
         user,
         registerInfo,
@@ -87,15 +93,16 @@ const AppProvider = ({ children }) => {
         setRegisterError,
         setLoginError,
         logoutUser,
+        setAvatarUser,
       }}
     >
       {children}
-    </AppContext.Provider>
+    </AppAuthContext.Provider>
   );
 };
 
 const useGlobalContext = () => {
-  return useContext(AppContext);
+  return useContext(AppAuthContext);
 };
 
-export { AppContext, AppProvider, useGlobalContext };
+export { AppAuthContext, AppAuthProvider, useGlobalContext };
