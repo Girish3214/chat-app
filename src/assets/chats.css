@@ -89,10 +89,11 @@
 
 /* Chat Box */
 .chat-box {
-  max-height: calc(100vh - 10rem);
+  max-height: calc(90vh - 10rem);
   overflow-y: auto;
   background: rgb(25, 25, 25);
   border-radius: 10px;
+  width: 100%;
 }
 
 .messages-box {
@@ -122,11 +123,14 @@
   padding: 0.75rem;
   border-radius: 5px;
   max-width: 50%;
+  align-self: self-start;
+  flex-grow: 0;
 }
 
 .message.self {
   color: white;
   background: #00bd9b;
+  align-self: self-end;
 }
 
 .message-footer {
