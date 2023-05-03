@@ -18,7 +18,10 @@ const AppChatProvider = ({ children, user }) => {
 
   const [messages, setMessages] = useState(null);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
-  const [messagesError, setmessagesError] = useState(null);
+  const [messagesError, setMessagesError] = useState(null);
+
+  const [sendMessagesError, setSendMessagesError] = useState(null);
+  const [newMessage, setNewMessage] = useState(null);
 
   const [potentialChats, setPotentialChats] = useState([]);
 
@@ -87,13 +90,13 @@ const AppChatProvider = ({ children, user }) => {
 
   const getmessages = async () => {
     setIsMessageLoading(true);
-    setmessagesError(null);
+    setMessagesError(null);
     if (currentChat?._id) {
       const response = await getRequest(`${messagesApi}/${currentChat?._id}`);
 
       setIsMessageLoading(false);
       if (response.error) {
-        return setmessagesError(response);
+        return setMessagesError(response);
       }
       setMessages(response);
     }
@@ -104,6 +107,26 @@ const AppChatProvider = ({ children, user }) => {
 
     return () => {};
   }, [currentChat]);
+
+  const sendTextMessage = useCallback(
+    async (text, sender, currentChat, setTextMessage) => {
+      if (!text) return;
+      const response = await postRequest(messagesApi, {
+        senderId: sender._id,
+        text,
+        chatId: currentChat._id,
+      });
+
+      if (response.error) {
+        return setSendMessagesError(response);
+      }
+
+      setNewMessage(response);
+      setMessages((prev) => [...prev, response]);
+      setTextMessage("");
+    },
+    []
+  );
 
   return (
     <AppChatContext.Provider
@@ -118,6 +141,7 @@ const AppChatProvider = ({ children, user }) => {
         messagesError,
         createChat,
         updateCurrentChat,
+        sendTextMessage,
       }}
     >
       {children}

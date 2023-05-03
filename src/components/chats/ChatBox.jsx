@@ -1,15 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
+import { IconButton, Stack } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import moment from "moment";
+import InputEmoji from "react-input-emoji";
+
 import { useGlobalChatContext } from "../../store/chatContext";
 import { useGlobalContext } from "../../store/authContext";
 import useFetchReceiverUser from "../../hooks/useFetchReceiverUser";
-import { Stack } from "@mui/material";
-import moment from "moment";
 
 const ChatBox = () => {
   const { user } = useGlobalContext();
-  const { currentChat, messages, isMessageLoading } = useGlobalChatContext();
+  const { currentChat, messages, isMessageLoading, sendTextMessage } =
+    useGlobalChatContext();
 
   const { receivedUser } = useFetchReceiverUser(currentChat, user);
+  const [textMessage, setTextMessage] = useState("");
+
+  const handleOnEnter = () => {
+    console.log(textMessage);
+    sendTextMessage(textMessage, user, currentChat, setTextMessage);
+  };
 
   if (!receivedUser) {
     return (
@@ -43,6 +53,23 @@ const ChatBox = () => {
               </span>
             </Stack>
           ))}
+      </Stack>
+      <Stack
+        spacing={3}
+        direction={"row"}
+        className="chat-input"
+        alignItems={"center"}
+      >
+        <InputEmoji
+          value={textMessage}
+          onChange={setTextMessage}
+          cleanOnEnter
+          onEnter={handleOnEnter}
+          placeholder="Type a message"
+        />
+        <IconButton className="send-btn" onClick={handleOnEnter}>
+          <SendIcon />
+        </IconButton>
       </Stack>
     </Stack>
   );
