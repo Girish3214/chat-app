@@ -18,7 +18,7 @@ function App() {
         </Backdrop>
       }
       <NavBar />
-      <Container component={"main"} maxWidth="lg" sx={{ height: "85%" }}>
+      <Container component={"main"} maxWidth="xl" sx={{ height: "85%" }}>
         <RouterComponent />
       </Container>
     </AppChatProvider>
