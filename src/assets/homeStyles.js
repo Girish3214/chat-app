@@ -1,6 +1,6 @@
 const homeStyles = {
   containerHeight: {
-    height: "80vh",
+    height: "75vh",
   },
   userCard: {
     color: "white",

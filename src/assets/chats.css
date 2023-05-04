@@ -110,12 +110,33 @@
   background: rgb(30, 30, 30);
 }
 
+.chat-header > .flex {
+  justify-content: center;
+  flex-direction: column;
+}
+
+.chat-header > .flex > strong {
+  color: #e9edef;
+}
+.chat-header > .flex > p {
+  color: #8696a0;
+}
+
 /* Messages */
 .messages {
   max-height: calc(100vh - 15rem);
   overflow-y: auto;
   padding: 0 2rem;
   flex-grow: 1;
+}
+
+.messages::-webkit-scrollbar {
+  width: 0.2rem;
+}
+.messages::-webkit-scrollbar-thumb {
+  background-color: grey;
+  width: 0.1rem;
+  border-radius: 1rem;
 }
 
 .message {

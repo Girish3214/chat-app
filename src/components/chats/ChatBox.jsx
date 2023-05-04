@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { IconButton, Stack } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import { Avatar, IconButton, Stack } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
@@ -10,16 +10,29 @@ import useFetchReceiverUser from "../../hooks/useFetchReceiverUser";
 
 const ChatBox = () => {
   const { user } = useGlobalContext();
-  const { currentChat, messages, isMessageLoading, sendTextMessage } =
-    useGlobalChatContext();
+  const {
+    currentChat,
+    messages,
+    isMessageLoading,
+    sendTextMessage,
+    onlineUser,
+  } = useGlobalChatContext();
 
   const { receivedUser } = useFetchReceiverUser(currentChat, user);
   const [textMessage, setTextMessage] = useState("");
+  const messagesEndRef = useRef();
+
+  const isOnline = onlineUser.some((user) => user.userId === receivedUser?._id);
 
   const handleOnEnter = () => {
-    console.log(textMessage);
     sendTextMessage(textMessage, user, currentChat, setTextMessage);
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behaviour: "smooth" });
+    return () => {};
+  }, [messages]);
 
   if (!receivedUser) {
     return (
@@ -36,7 +49,15 @@ const ChatBox = () => {
   return (
     <Stack spacing={4} className="chat-box">
       <div className="chat-header">
-        <strong>{receivedUser?.name}</strong>
+        <div>
+          <Avatar sx={{ marginRight: 1.5 }}>
+            <img src={receivedUser?.avatar} alt="avatar" />
+          </Avatar>
+        </div>
+        <div className="flex">
+          <strong>{receivedUser?.name}</strong>
+          {isOnline && <p>online</p>}
+        </div>
       </div>
       <Stack spacing={3} className="messages">
         {messages &&
@@ -46,6 +67,7 @@ const ChatBox = () => {
               className={`${
                 message?.senderId === user?._id ? "message self" : "message"
               }`}
+              ref={messagesEndRef}
             >
               <span>{message.text}</span>
               <span className="message-footer">
