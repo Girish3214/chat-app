@@ -5,6 +5,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import { io } from "socket.io-client";
+
 import { postRequest, getRequest } from "../uitils/serviceCalls";
 import { getChatsApi, getUserApi, messagesApi } from "../uitils/apiUrls";
 
@@ -24,6 +26,55 @@ const AppChatProvider = ({ children, user }) => {
   const [newMessage, setNewMessage] = useState(null);
 
   const [potentialChats, setPotentialChats] = useState([]);
+
+  const [socket, setSocket] = useState(null);
+  const [onlineUser, setOnlineUser] = useState([]);
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:3000");
+    setSocket(newSocket);
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (socket === null) return;
+    socket.emit("addNewUser", user?._id);
+    socket.on("getOnlineUsers", (res) => {
+      setOnlineUser(res);
+    });
+    return () => {
+      socket.off("getOnlineUsers");
+    };
+  }, [socket]);
+
+  // send messages
+  useEffect(() => {
+    if (socket === null) return;
+
+    const receiverId = currentChat?.members?.find((id) => id !== user?._id);
+
+    socket.emit("sendMessage", {
+      ...newMessage,
+      receiverId,
+    });
+    return () => {};
+  }, [newMessage]);
+
+  // Receive messages
+  useEffect(() => {
+    if (socket === null) return;
+
+    socket.on("getMessage", (res) => {
+      if (currentChat?._id !== res.chatId) return;
+
+      setMessages((prev) => [...prev, res]);
+    });
+    return () => {
+      socket.off("getMessage");
+    };
+  }, [socket, currentChat]);
 
   const createChat = useCallback(async (firstId, secondId) => {
     const response = await postRequest(getChatsApi, {
@@ -139,6 +190,7 @@ const AppChatProvider = ({ children, user }) => {
         messages,
         isMessageLoading,
         messagesError,
+        onlineUser,
         createChat,
         updateCurrentChat,
         sendTextMessage,
