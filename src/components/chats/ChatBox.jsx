@@ -26,7 +26,7 @@ const ChatBox = () => {
 
   const handleOnEnter = () => {
     sendTextMessage(textMessage, user, currentChat, setTextMessage);
-    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    // messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const ChatBox = () => {
         </div>
         <div className="flex">
           <strong>{receivedUser?.name}</strong>
-          {isOnline && <p>online</p>}
+          {isOnline ? <p>online</p> : <p>offline...</p>}
         </div>
       </div>
       <Stack spacing={3} className="messages">
