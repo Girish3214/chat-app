@@ -197,24 +197,20 @@ const AppChatProvider = ({ children, user }) => {
   );
 
   const markNotificationAsRead = useCallback(
-    (clickedNotif, userChats, user, notifications) => {
-      const desiredChats = userChats.find((chat) => {
-        const chatMembers = [user._id, clickedNotif.senderId];
-        const isDesiredChat = chat?.members.every((member) => {
-          return chatMembers.includes(member);
-        });
-        return isDesiredChat;
-      });
-
+    (userNotifications, notifications) => {
       const mNotifications = notifications.map((notif) => {
-        if (clickedNotif.senderId === notif.senderId) {
-          return { ...notif, isRead: true };
-        } else {
-          return notif;
-        }
+        let notification;
+
+        userNotifications?.forEach((ele) => {
+          if (ele.senderId === notif.senderId) {
+            notification = { ...notif, isRead: true };
+          } else {
+            notification = notif;
+          }
+        });
+        return notification;
       });
 
-      updateCurrentChat(desiredChats);
       setNotification(mNotifications);
     },
     []
@@ -234,6 +230,7 @@ const AppChatProvider = ({ children, user }) => {
         onlineUser,
         notifications,
         allUsers,
+        newMessage,
         createChat,
         updateCurrentChat,
         sendTextMessage,
