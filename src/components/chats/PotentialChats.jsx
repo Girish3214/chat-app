@@ -5,7 +5,15 @@ import { useGlobalContext } from "../../store/authContext";
 
 const PotentialChats = () => {
   const { user } = useGlobalContext();
-  const { potentialChats, createChat } = useGlobalChatContext();
+  const { potentialChats, createChat, updateCurrentChat } =
+    useGlobalChatContext();
+
+  const handlePotentialUserClick = async (newUser) => {
+    const response = await createChat(user?._id, newUser?._id);
+    if (response?._id) {
+      updateCurrentChat(response);
+    }
+  };
   return (
     <>
       <div className="all-users">
@@ -14,7 +22,7 @@ const PotentialChats = () => {
             <div
               key={newUser._id + index}
               className="single-user"
-              onClick={() => createChat(user?._id, newUser?._id)}
+              onClick={() => handlePotentialUserClick(newUser)}
             >
               {newUser.avatar && (
                 <Avatar sx={{ width: 56, height: 56 }}>

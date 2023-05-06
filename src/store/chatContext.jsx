@@ -7,7 +7,7 @@ import {
 } from "react";
 import { io } from "socket.io-client";
 
-import { postRequest, getRequest } from "../uitils/serviceCalls";
+import { postRequest, getRequest, deleteRequest } from "../uitils/serviceCalls";
 import { getChatsApi, getUserApi, messagesApi } from "../uitils/apiUrls";
 
 const AppChatContext = createContext();
@@ -17,6 +17,7 @@ const AppChatProvider = ({ children, user }) => {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [userChatsError, setUserChatsError] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
+  const [prevChat, setPrevChat] = useState(null);
 
   const [allUsers, setAllUsers] = useState([]);
 
@@ -34,7 +35,6 @@ const AppChatProvider = ({ children, user }) => {
 
   const [notifications, setNotification] = useState([]);
 
-  console.log("cls notif", notifications);
   useEffect(() => {
     const newSocket = io("http://localhost:3000");
     setSocket(newSocket);
@@ -98,10 +98,27 @@ const AppChatProvider = ({ children, user }) => {
       secondId,
     });
     if (response.error) {
-      return console.log("Error in creating chat", response);
+      return response.error;
     }
     setUserChats((prev) => [...prev, response]);
+    setPrevChat(response);
+    return response;
   }, []);
+
+  const deleteChat = useCallback(
+    async (chatId) => {
+      const response = await deleteRequest(`${getChatsApi}/${prevChat?._id}`);
+      if (response.error) {
+        return response.error;
+      }
+      const filterChat = allUsers.filter((chat) => chat?._id === prevChat?._id);
+      setUserChats((prev) => [
+        ...prev.filter((chat) => chat?._id !== prevChat?._id),
+      ]);
+      setPotentialChats((prev) => [filterChat, ...prev]);
+    },
+    [prevChat]
+  );
 
   const updateCurrentChat = useCallback(async (chat) => {
     setCurrentChat(chat);
@@ -232,6 +249,7 @@ const AppChatProvider = ({ children, user }) => {
         allUsers,
         newMessage,
         createChat,
+        deleteChat,
         updateCurrentChat,
         sendTextMessage,
         markNotificationAsRead,

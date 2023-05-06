@@ -16,6 +16,7 @@ const ChatBox = () => {
     isMessageLoading,
     sendTextMessage,
     onlineUser,
+    deleteChat,
   } = useGlobalChatContext();
 
   const { receivedUser } = useFetchReceiverUser(currentChat, user);
@@ -28,11 +29,18 @@ const ChatBox = () => {
     sendTextMessage(textMessage, user, currentChat, setTextMessage);
     // messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
-
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behaviour: "smooth" });
     return () => {};
   }, [messages]);
+
+  useEffect(() => {
+    return () => {
+      if (currentChat?._id && (messages?.length === 0 || messages === null)) {
+        deleteChat();
+      }
+    };
+  }, [currentChat]);
 
   if (!receivedUser) {
     return (

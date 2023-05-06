@@ -11,10 +11,9 @@ const HomePage = () => {
   const { userChats, isChatLoading, updateCurrentChat } =
     useGlobalChatContext();
   const { user } = useGlobalContext();
-
-  if (userChats?.length < 1) {
-    return;
-  }
+  // if (userChats?.length < 1) {
+  //   return;
+  // }
   return (
     <Container>
       <PotentialChats />
