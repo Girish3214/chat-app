@@ -21,4 +21,14 @@ const getRequest = async (api, body) => {
   }
 };
 
-export { postRequest, getRequest };
+const deleteRequest = async (api, body) => {
+  try {
+    const response = await axios.delete(api);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return { error: true, msg: error?.response?.data?.msg ?? error?.message };
+  }
+};
+
+export { postRequest, getRequest, deleteRequest };
