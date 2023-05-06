@@ -65,7 +65,7 @@
 }
 
 .user-card .text-content {
-  width: 170px;
+  flex-grow: 1;
 }
 
 .user-card .name {
