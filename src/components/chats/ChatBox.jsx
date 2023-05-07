@@ -3,16 +3,19 @@ import { Avatar, IconButton, Stack } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
+import Lottie from "react-lottie-player";
 
 import { useGlobalChatContext } from "../../store/chatContext";
 import { useGlobalContext } from "../../store/authContext";
 import useFetchReceiverUser from "../../hooks/useFetchReceiverUser";
+import Animation from "../../uitils/typingAnimation.json";
 
 const ChatBox = () => {
   const { user } = useGlobalContext();
   const {
     currentChat,
     messages,
+    socket,
     isMessageLoading,
     sendTextMessage,
     onlineUser,
@@ -21,11 +24,44 @@ const ChatBox = () => {
 
   const { receivedUser } = useFetchReceiverUser(currentChat, user);
   const [textMessage, setTextMessage] = useState("");
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+
   const messagesEndRef = useRef();
 
   const isOnline = onlineUser.some((user) => user.userId === receivedUser?._id);
 
+  useEffect(() => {
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop-typing", () => setIsTyping(false));
+
+    return () => {};
+  }, [typing, socket]);
+
+  const typingHandler = (event) => {
+    setTextMessage(event);
+    if (event) {
+      let isTypingValue = false;
+      if (!typing) {
+        setTyping(true);
+        isTypingValue = true;
+        socket.emit("typing", currentChat?._id);
+      }
+
+      let lastTypingTime = new Date().getTime();
+      var timerLength = 3000;
+      setTimeout(() => {
+        var timeNow = new Date().getTime();
+        if (timeNow - lastTypingTime >= timerLength && isTypingValue) {
+          setTyping(false);
+          socket.emit("stop-typing", currentChat?._id);
+        }
+      }, timerLength);
+    }
+  };
+
   const handleOnEnter = () => {
+    socket.emit("stop-typing", currentChat?._id);
     sendTextMessage(textMessage, user, currentChat, setTextMessage);
     // messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
@@ -36,7 +72,7 @@ const ChatBox = () => {
 
   useEffect(() => {
     return () => {
-      if (currentChat?._id && (messages?.length === 0 || messages === null)) {
+      if (currentChat?._id && (messages?.length === 0 || !messages)) {
         deleteChat();
       }
     };
@@ -84,6 +120,21 @@ const ChatBox = () => {
             </Stack>
           ))}
       </Stack>
+      {isTyping && (
+        <div id="typing-container">
+          <Lottie
+            autoFocus={true}
+            animationData={Animation}
+            style={{
+              width: 75,
+              height: 90,
+              marginLeft: "-6px",
+              marginBottom: "-28px",
+            }}
+            play
+          />
+        </div>
+      )}
       <Stack
         spacing={3}
         direction={"row"}
@@ -92,7 +143,7 @@ const ChatBox = () => {
       >
         <InputEmoji
           value={textMessage}
-          onChange={setTextMessage}
+          onChange={(e) => typingHandler(e)}
           cleanOnEnter
           onEnter={handleOnEnter}
           placeholder="Type a message"

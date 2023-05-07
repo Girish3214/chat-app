@@ -13,6 +13,8 @@ const UserChatsContainer = ({ chat, user }) => {
   const { notifications, markNotificationAsRead } = useGlobalChatContext();
 
   const unreadNotifications = useUnreadNotifications(notifications);
+
+  console.log("cls notif", notifications, unreadNotifications);
   const { latestMessage } = useFetchLatestMessage(chat);
 
   const currentUserNotifications = unreadNotifications?.filter(

@@ -120,9 +120,13 @@ const AppChatProvider = ({ children, user }) => {
     [prevChat]
   );
 
-  const updateCurrentChat = useCallback(async (chat) => {
-    setCurrentChat(chat);
-  }, []);
+  const updateCurrentChat = useCallback(
+    async (chat) => {
+      socket.emit("joinChat", chat?._id);
+      setCurrentChat(chat);
+    },
+    [socket]
+  );
 
   const getUsers = async () => {
     if (user) {
@@ -248,6 +252,7 @@ const AppChatProvider = ({ children, user }) => {
         notifications,
         allUsers,
         newMessage,
+        socket,
         createChat,
         deleteChat,
         updateCurrentChat,
