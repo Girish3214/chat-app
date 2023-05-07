@@ -22,7 +22,6 @@ const AppChatProvider = ({ children, user }) => {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [userChatsError, setUserChatsError] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
-  const [prevChat, setPrevChat] = useState(null);
 
   const [allUsers, setAllUsers] = useState([]);
 
@@ -39,6 +38,8 @@ const AppChatProvider = ({ children, user }) => {
   const [onlineUser, setOnlineUser] = useState([]);
 
   const [notifications, setNotification] = useState([]);
+
+  const [newChats, setNewChats] = useState([]);
 
   useEffect(() => {
     const newSocket = io("http://localhost:3000");
@@ -128,22 +129,25 @@ const AppChatProvider = ({ children, user }) => {
     );
   }, []);
 
-  const createChat = useCallback(async (firstId, secondId) => {
-    const response = await postRequest(getChatsApi, {
-      firstId,
-      secondId,
-    });
-    if (response.error) {
-      return response.error;
-    }
-    setUserChats((prev) => [...prev, response]);
-    setPrevChat(response);
-    return response;
-  }, []);
+  const createChat = useCallback(
+    async (firstId, secondId) => {
+      const response = await postRequest(getChatsApi, {
+        firstId,
+        secondId,
+      });
+      if (response.error) {
+        return response.error;
+      }
+      setUserChats((prev) => [...prev, response]);
+      setNewChats((prev) => [...prev, response]);
+      return response;
+    },
+    [newChats]
+  );
 
-  const deleteChat = useCallback(
-    async (chatId) => {
-      if (prevChat?._id) {
+  const deleteChat = useCallback(async () => {
+    if (newChats?.length !== 0) {
+      newChats.map(async (prevChat) => {
         const response = await deleteRequest(`${getChatsApi}/${prevChat?._id}`);
         if (response.error) {
           return response.error;
@@ -155,10 +159,9 @@ const AppChatProvider = ({ children, user }) => {
           ...prev.filter((chat) => chat?._id !== prevChat?._id),
         ]);
         setPotentialChats((prev) => [filterChat, ...prev]);
-      }
-    },
-    [prevChat]
-  );
+      });
+    }
+  }, [newChats]);
 
   const updateCurrentChat = useCallback(
     async (chat) => {
@@ -218,8 +221,16 @@ const AppChatProvider = ({ children, user }) => {
   useEffect(() => {
     getUserChats();
 
-    return () => {};
+    return () => {
+      deleteChat();
+    };
   }, [user]);
+
+  useEffect(() => {
+    return () => {
+      deleteChat();
+    };
+  }, []);
 
   const getmessages = async () => {
     setIsMessageLoading(true);
@@ -257,6 +268,10 @@ const AppChatProvider = ({ children, user }) => {
       setNewMessage(response);
       setMessages((prev) => [...prev, response]);
       setTextMessage("");
+      const removedNewChats = newChats?.filter(
+        (chat) => chat?._id !== currentChat?._id
+      );
+      setNewChats(removedNewChats);
     },
     []
   );

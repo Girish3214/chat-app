@@ -14,7 +14,6 @@ const UserChatsContainer = ({ chat, user }) => {
 
   const unreadNotifications = useUnreadNotifications(notifications);
 
-  console.log("cls notif", notifications, unreadNotifications);
   const { latestMessage } = useFetchLatestMessage(chat);
 
   const currentUserNotifications = unreadNotifications?.filter(
@@ -50,7 +49,7 @@ const UserChatsContainer = ({ chat, user }) => {
         <div className="text-content">
           <div className="name">{receivedUser?.name}</div>
           <div className="text">
-            <span>{truncateText(latestMessage?.text) ?? "waiting...."}</span>
+            <span>{truncateText(latestMessage?.text) ?? ""}</span>
           </div>
         </div>
       </div>

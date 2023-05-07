@@ -125,6 +125,14 @@
   color: #8696a0;
 }
 
+.online {
+  color: rgb(0, 219, 0) !important;
+}
+
+.offline {
+  color: rgb(219, 0, 0);
+}
+
 /* Messages */
 .messages {
   max-height: calc(100vh - 15rem);

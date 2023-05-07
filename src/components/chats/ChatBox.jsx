@@ -9,6 +9,7 @@ import { useGlobalChatContext } from "../../store/chatContext";
 import { useGlobalContext } from "../../store/authContext";
 import useFetchReceiverUser from "../../hooks/useFetchReceiverUser";
 import Animation from "../../uitils/typingAnimation.json";
+import "../../assets/chats.css";
 
 const ChatBox = () => {
   const { user } = useGlobalContext();
@@ -19,7 +20,6 @@ const ChatBox = () => {
     isMessageLoading,
     sendTextMessage,
     onlineUser,
-    deleteChat,
     deleteNotifications,
   } = useGlobalChatContext();
 
@@ -77,7 +77,7 @@ const ChatBox = () => {
     }
     return () => {
       if (currentChat?._id && (messages?.length === 0 || !messages)) {
-        deleteChat();
+        // deleteChat();
       }
     };
   }, [currentChat]);
@@ -104,7 +104,11 @@ const ChatBox = () => {
         </div>
         <div className="flex">
           <strong>{receivedUser?.name}</strong>
-          {isOnline ? <p>online</p> : <p>offline...</p>}
+          {isOnline ? (
+            <p className="online">online</p>
+          ) : (
+            <p className="offline">offline...</p>
+          )}
         </div>
       </div>
       <Stack spacing={3} className="messages">
