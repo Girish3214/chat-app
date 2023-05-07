@@ -42,7 +42,7 @@ const AppChatProvider = ({ children, user }) => {
   const [newChats, setNewChats] = useState([]);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3000");
+    const newSocket = io("http://localhost:8080");
     setSocket(newSocket);
     getNotificationsIfOffline(user);
     return () => {
