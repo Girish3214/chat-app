@@ -8,7 +8,12 @@ import {
 import { io } from "socket.io-client";
 
 import { postRequest, getRequest, deleteRequest } from "../uitils/serviceCalls";
-import { getChatsApi, getUserApi, messagesApi } from "../uitils/apiUrls";
+import {
+  getChatsApi,
+  getUserApi,
+  messagesApi,
+  notificationApi,
+} from "../uitils/apiUrls";
 
 const AppChatContext = createContext();
 
@@ -38,6 +43,7 @@ const AppChatProvider = ({ children, user }) => {
   useEffect(() => {
     const newSocket = io("http://localhost:3000");
     setSocket(newSocket);
+    getNotificationsIfOffline(user);
     return () => {
       newSocket.disconnect();
     };
@@ -54,18 +60,44 @@ const AppChatProvider = ({ children, user }) => {
     };
   }, [socket]);
 
+  const sendNotificationsIfOffline = async (senderId, receiverId) => {
+    const response = await postRequest(notificationApi, {
+      date: new Date(),
+      isRead: false,
+      senderId,
+      receiverId,
+    });
+    if (response.error) {
+      return response.error;
+    }
+  };
+
   // send messages
   useEffect(() => {
     if (socket === null) return;
 
     const receiverId = currentChat?.members?.find((id) => id !== user?._id);
+    const senderId = currentChat?.members?.find((id) => id === user?._id);
 
     socket.emit("sendMessage", {
       ...newMessage,
       receiverId,
     });
+    const isOnline = onlineUser.some((user) => user?.userId === receiverId);
+    if (!isOnline) {
+      sendNotificationsIfOffline(senderId, receiverId);
+    }
     return () => {};
   }, [newMessage]);
+
+  const getNotificationsIfOffline = useCallback(async (receiver) => {
+    console.log("\ncalled...", receiver?._id);
+    if (receiver?._id) {
+      console.log("called...", receiver);
+      const response = await getRequest(`${notificationApi}/${receiver._id}`);
+      setNotification(response);
+    }
+  }, []);
 
   // Receive messages and notifications
   useEffect(() => {
@@ -92,6 +124,12 @@ const AppChatProvider = ({ children, user }) => {
     };
   }, [socket, currentChat]);
 
+  const deleteNotifications = useCallback(async (currentChatId, receivedId) => {
+    const response = await deleteRequest(
+      `${notificationApi}/${currentChatId}/${receivedId}`
+    );
+  }, []);
+
   const createChat = useCallback(async (firstId, secondId) => {
     const response = await postRequest(getChatsApi, {
       firstId,
@@ -107,15 +145,19 @@ const AppChatProvider = ({ children, user }) => {
 
   const deleteChat = useCallback(
     async (chatId) => {
-      const response = await deleteRequest(`${getChatsApi}/${prevChat?._id}`);
-      if (response.error) {
-        return response.error;
+      if (prevChat?._id) {
+        const response = await deleteRequest(`${getChatsApi}/${prevChat?._id}`);
+        if (response.error) {
+          return response.error;
+        }
+        const filterChat = allUsers.filter(
+          (chat) => chat?._id === prevChat?._id
+        );
+        setUserChats((prev) => [
+          ...prev.filter((chat) => chat?._id !== prevChat?._id),
+        ]);
+        setPotentialChats((prev) => [filterChat, ...prev]);
       }
-      const filterChat = allUsers.filter((chat) => chat?._id === prevChat?._id);
-      setUserChats((prev) => [
-        ...prev.filter((chat) => chat?._id !== prevChat?._id),
-      ]);
-      setPotentialChats((prev) => [filterChat, ...prev]);
     },
     [prevChat]
   );
@@ -127,6 +169,10 @@ const AppChatProvider = ({ children, user }) => {
     },
     [socket]
   );
+
+  const deleteCurrentChat = useCallback(async (chat) => {
+    setCurrentChat(null);
+  }, []);
 
   const getUsers = async () => {
     if (user) {
@@ -256,8 +302,11 @@ const AppChatProvider = ({ children, user }) => {
         createChat,
         deleteChat,
         updateCurrentChat,
+        deleteCurrentChat,
         sendTextMessage,
         markNotificationAsRead,
+        getNotificationsIfOffline,
+        deleteNotifications,
       }}
     >
       {children}

@@ -7,3 +7,4 @@ export const setAvatarApi = "/users/setAvatar";
 export const getChatsApi = "/chats";
 
 export const messagesApi = "/messages";
+export const notificationApi = "/notifications";

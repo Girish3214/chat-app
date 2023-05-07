@@ -23,7 +23,7 @@ const getRequest = async (api, body) => {
 
 const deleteRequest = async (api, body) => {
   try {
-    const response = await axios.delete(api);
+    const response = await axios.delete(api, body);
     return response.data;
   } catch (error) {
     console.log(error);

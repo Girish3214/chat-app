@@ -20,6 +20,7 @@ const ChatBox = () => {
     sendTextMessage,
     onlineUser,
     deleteChat,
+    deleteNotifications,
   } = useGlobalChatContext();
 
   const { receivedUser } = useFetchReceiverUser(currentChat, user);
@@ -71,6 +72,9 @@ const ChatBox = () => {
   }, [messages]);
 
   useEffect(() => {
+    if (currentChat?._id) {
+      deleteNotifications(currentChat?.members[0], currentChat?.members[1]);
+    }
     return () => {
       if (currentChat?._id && (messages?.length === 0 || !messages)) {
         deleteChat();
