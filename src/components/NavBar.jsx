@@ -4,10 +4,17 @@ import headerStyles from "../assets/headerStyles";
 import { Link, useLocation } from "react-router-dom";
 import { useGlobalContext } from "../store/authContext";
 import Hidden from "@mui/material/Hidden";
+import { useGlobalChatContext } from "../store/chatContext";
 
 const NavBar = () => {
   const { user, logoutUser } = useGlobalContext();
+  const { deleteCurrentChat } = useGlobalChatContext();
   const { pathname } = useLocation();
+
+  const logoutHandler = () => {
+    logoutUser();
+    deleteCurrentChat();
+  };
   return (
     <>
       <Box sx={headerStyles.box}>
@@ -45,7 +52,7 @@ const NavBar = () => {
               {user ? (
                 <>
                   <Typography variant="h6" sx={headerStyles.menuTitles}>
-                    <Link to={"/login"} onClick={() => logoutUser()}>
+                    <Link to={"/login"} onClick={() => logoutHandler()}>
                       Logout
                     </Link>
                   </Typography>
