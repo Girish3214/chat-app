@@ -91,9 +91,7 @@ const AppChatProvider = ({ children, user }) => {
   }, [newMessage]);
 
   const getNotificationsIfOffline = useCallback(async (receiver) => {
-    console.log("\ncalled...", receiver?._id);
     if (receiver?._id) {
-      console.log("called...", receiver);
       const response = await getRequest(`${notificationApi}/${receiver._id}`);
       setNotification(response);
     }
