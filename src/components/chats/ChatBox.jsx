@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Avatar, IconButton, Stack } from "@mui/material";
+import { Avatar, Hidden, IconButton, Stack } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
@@ -84,14 +84,20 @@ const ChatBox = () => {
 
   if (!receivedUser) {
     return (
-      <p style={{ textAlign: "center", width: "100%" }}>
-        No conversation selected yet
-      </p>
+      <Hidden smDown>
+        <p style={{ textAlign: "center", width: "100%" }}>
+          No conversation selected yet
+        </p>
+      </Hidden>
     );
   }
 
   if (isMessageLoading) {
-    return <p style={{ textAlign: "center", width: "100%" }}>loading...</p>;
+    return (
+      <Hidden smDown>
+        <p style={{ textAlign: "center", width: "100%" }}>loading...</p>;
+      </Hidden>
+    );
   }
 
   return (

@@ -7,8 +7,11 @@ import { useGlobalChatContext } from "../../store/chatContext";
 import useUnreadNotifications from "../../hooks/useUnreadNotifications";
 import useFetchLatestMessage from "../../hooks/useFetchLatestMessage";
 import useFetchReceiverUser from "../../hooks/useFetchReceiverUser";
+import { useNavigate } from "react-router-dom";
 
 const UserChatsContainer = ({ chat, user }) => {
+  const navigate = useNavigate();
+
   const { receivedUser } = useFetchReceiverUser(chat, user);
   const { notifications, markNotificationAsRead } = useGlobalChatContext();
 

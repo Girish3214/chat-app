@@ -6,6 +6,8 @@ import LoginPage from "../pages/login/LoginPage";
 import RegisterPage from "../pages/register/RegisterPage";
 import SetAvatar from "../pages/avatar/SetAvatar";
 import { useGlobalContext } from "../store/authContext";
+import ChatBox from "./chats/ChatBox";
+import { Hidden } from "@mui/material";
 
 const RouterComponent = () => {
   const { user } = useGlobalContext();
